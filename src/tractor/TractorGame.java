@@ -5,11 +5,11 @@ public class TractorGame {
 	static final int NUM_PLAYERS = 4;
 	static final int NUM_DECKS = 2;
 	public static final boolean TESTING = true;
-	
-	public TractorGame() {
+	static Player[] players;
+	public static void startGame() {
 		
 		Round currentRound = null;
-		Player[] players = new Player[NUM_PLAYERS];
+		players = new Player[NUM_PLAYERS];
 		
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player(i);
@@ -25,7 +25,6 @@ public class TractorGame {
 	}
 	
 	public static void main(String[] args) {
-		@SuppressWarnings("unused")
-		TractorGame game = new TractorGame();
+		startGame();
 	}
 }

@@ -4,44 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Player {
-	List<Card> cards;
-	int id;
-	int level;
+public class Player extends CardCollection{
+	int id, level;
 
 	public Player(int i) {
-		cards = new ArrayList<Card>();
+		super();
 		id = i;
 		level = 0;
 	}
 
-	public void addCard(Card card) {
-		cards.add(card);
-		Collections.sort(cards);
-	}
-
-	public boolean hasCards() {
-		return cards.size() > 0;
-	}
-
-	public void removeCards(List<Card> cardsPlayed) {
-		for (Card i : cardsPlayed) {
-			cards.remove(i);
-		}
-	}
-
 	public void levelUp(int level) {
 		this.level += level;
-	}
-
-	public int countSuit(int suit) {
-		int count = 0;
-		for (Card i : cards) {
-			if (i.getSuit() == suit) {
-				count++;
-			}
-		}
-		return count;
 	}
 
 	public boolean hasComboToPlay(Combo firstCombo) {
@@ -53,20 +26,20 @@ public class Player {
 		int maxCount = 0;
 		int startOfSuit = 0;
 		// find start of suit
-		for (int i = 0; i < cards.size(); i++) {
-			if (cards.get(i).getSuit() == firstCombo.getSuit()) {
+		for (int i = 0; i < size(); i++) {
+			if (get(i).getSuit() == firstCombo.getSuit()) {
 				startOfSuit = i;
 				break;
 			}
 		}
 		int i = startOfSuit;
 		int lastPair = -1;
-		while (i < cards.size() - 1 && cards.get(i).getSuit() == firstCombo.getSuit()) {
-			if (cards.get(i).equals(cards.get(i + 1))) {// is a pair
-				if (lastPair == cards.get(i).getPowerIndex()) {
+		while (i < size() - 1 && get(i).getSuit() == firstCombo.getSuit()) {
+			if (get(i).equals(get(i + 1))) {// is a pair
+				if (lastPair == get(i).getPowerIndex()) {
 					i += 2;
 					continue;
-				} else if (lastPair == -1 || cards.get(i).getPowerIndex() != lastPair + 1) {
+				} else if (lastPair == -1 || get(i).getPowerIndex() != lastPair + 1) {
 					// start of new pair list
 					currentCount = 1;
 
@@ -76,13 +49,13 @@ public class Player {
 				if (currentCount > maxCount) {
 					maxCount = currentCount;
 				}
-				lastPair = cards.get(i).getPowerIndex();
+				lastPair = get(i).getPowerIndex();
 				i += 2;
 			} else { // not a pair
 				i++;
 			}
 		}
-		if (maxCount * 2 >= firstCombo.cards.size()) {
+		if (maxCount * 2 >= firstCombo.size()) {
 			return true;
 		}
 		return false;
@@ -91,7 +64,7 @@ public class Player {
 	public boolean playedRequired(Combo firstCombo, Combo attemptedCombo) {
 		List<Integer> handConsecutivePairCounts = consecutivePairCounts(firstCombo);
 		List<Integer> comboConsecutivePairCounts = attemptedCombo.consecutivePairCounts(firstCombo);
-		int numberOfCardsNeeded = firstCombo.cards.size();
+		int numberOfCardsNeeded = firstCombo.size();
 		int i = 0;
 		while (numberOfCardsNeeded != 0 && i < handConsecutivePairCounts.size()) {
 			if (i >= comboConsecutivePairCounts.size()) {
@@ -121,20 +94,20 @@ public class Player {
 		int maxCount = 0;
 		int startOfSuit = 0;
 		// find start of suit
-		for (int i = 0; i < cards.size(); i++) {
-			if (cards.get(i).getSuit() == firstCombo.getSuit()) {
+		for (int i = 0; i < size(); i++) {
+			if (get(i).getSuit() == firstCombo.getSuit()) {
 				startOfSuit = i;
 				break;
 			}
 		}
 		int i = startOfSuit;
 		int lastPair = -1;
-		while (i < cards.size() - 1 && cards.get(i).getSuit() == firstCombo.getSuit()) {
-			if (cards.get(i).equals(cards.get(i + 1))) {// is a pair
-				if (lastPair == cards.get(i).getPowerIndex()) {
+		while (i < size() - 1 && get(i).getSuit() == firstCombo.getSuit()) {
+			if (get(i).equals(get(i + 1))) {// is a pair
+				if (lastPair == get(i).getPowerIndex()) {
 					i += 2;
 					continue;
-				} else if (lastPair == -1 || cards.get(i).getPowerIndex() != lastPair + 1) {
+				} else if (lastPair == -1 || get(i).getPowerIndex() != lastPair + 1) {
 					// start of new pair list
 					currentCount = 1;
 
@@ -144,7 +117,7 @@ public class Player {
 				if (currentCount > maxCount) {
 					maxCount = currentCount;
 				}
-				lastPair = cards.get(i).getPowerIndex();
+				lastPair = get(i).getPowerIndex();
 				i += 2;
 			} else { // not a pair
 				i++;
@@ -180,12 +153,16 @@ public class Player {
 		} else {
 			toCheck = new Card(Card.SUITS[suit] + Card.NORMAL_VALUES[Card.trumpValue]);
 		}
-		for (Card i : cards) {
+		for (Card i : this) {
 			if (i.equals(toCheck)) {
 				numCards--;
 			}
 		}
 		return numCards <= 0;
 	}
+
+	
+
+	
 
 }

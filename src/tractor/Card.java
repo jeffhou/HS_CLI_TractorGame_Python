@@ -3,12 +3,12 @@ package tractor;
 public class Card implements Comparable<Card> {
 	static final String[] NORMAL_VALUES = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 	static final String[] JOKERS = { "J-", "J+" };
-//	static final String[] SUITS = { "¶", "®", "§", "Ø" };
-	static final String[] SUITS = { "#", "@", "$", "&" };
+	static final char[] SUITS = { '#', '@', '$', '&' };
 	static final int[] POINTS = { 0, 0, 0, 5, 0, 0, 0, 0, 10, 0, 0, 10, 0 };
 	public static final int TRUMP_SUIT = 5;
 	public static int trumpSuit;
 	public static int trumpValue;
+
 	int cardIndex;
 
 	public Card(int cardIndex) {
@@ -16,20 +16,25 @@ public class Card implements Comparable<Card> {
 	}
 
 	public Card(String cardName) {
-		// System.out.println("Card Name: "+cardName);
-		String tempString;
-		for (int i = 0; i < 54; i++) {
-			if (i < 52) {
-				tempString = SUITS[i / 13] + NORMAL_VALUES[i % 13];
-			} else {
-				tempString = JOKERS[i - 52];
+		if (cardName.equals("J-")) {
+			cardIndex = 52;
+		} else if (cardName.equals("J+")) {
+			cardIndex = 53;
+		} else {
+			char suitChar = cardName.charAt(0);
+			String valueChar = cardName.substring(1);
+
+			for (int i = 0; i < SUITS.length; i++) {
+				if (suitChar == SUITS[i]) {
+					cardIndex = i * 13;
+				}
 			}
-			if (cardName.equals(tempString)) {
-				cardIndex = i;
-				break;
+			for (int i = 0; i < NORMAL_VALUES.length; i++) {
+				if (NORMAL_VALUES[i].equals(valueChar)) {
+					cardIndex += i;
+				}
 			}
 		}
-		// System.out.println("Card Index: "+cardIndex);
 	}
 
 	@Override

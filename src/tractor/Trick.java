@@ -13,7 +13,7 @@ public class Trick {
 	public int getPoints() {
 		int points = 0;
 		for (Combo i: combosPlayed){
-			for (Card j: i.cards) {
+			for (Card j: i) {
 				points += j.getPoints();
 			}
 		}
@@ -41,7 +41,7 @@ public class Trick {
 		return combosPlayed.get(0).getType();
 	}
 	public int getNumCards() {
-		return combosPlayed.get(0).getNumCards();
+		return combosPlayed.get(0).getCardCount();
 	}
 
 }

@@ -1,43 +1,34 @@
 package tractor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+public class Deck extends CardCollection {
 
-public class Deck {
 	private static final int DECK_SIZE = 54;
-	List<Card> cards;
+
 	public Deck(int numDecks) {
-		cards = new ArrayList<Card>();
-		for (int i = 0; i < numDecks; i++) {
-			addDeck();
-		}
+		super(false);
+		addDecks(numDecks);
 		shuffle();
 	}
 
-	private void shuffle() {
-		long seed = TractorGame.TESTING ? 1445123063075L : System.currentTimeMillis();
-		System.out.println("SEED: " + seed);
-		Collections.shuffle(cards, new Random(seed));
-	}
-
+	/**
+	 * Adds a complete deck of playing cards into the main deck.
+	 */
 	private void addDeck() {
 		for (int i = 0; i < DECK_SIZE; i++) {
-			cards.add(new Card(i));
+			addCard(new Card(i));
 		}
 	}
 
-	public int size() {
-		return cards.size();
+	/**
+	 * adds multiple decks into main deck
+	 */
+	private void addDecks(int numDecks) {
+		for (int i = 0; i < numDecks; i++) {
+			addDeck();
+		}
 	}
 
-	public Card pop() {
-		return cards.remove(0);
+	public Card draw() {
+		return remove(0);
 	}
-
-	public void addCard(Card i) {
-		cards.add(i);
-	}
-
 }
