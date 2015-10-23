@@ -4,28 +4,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Combo extends CardCollection{
+public class Combo extends SortedCardCollection {
 	Player player;
 
 	public Combo(Player player, CardCollection cardsPlayed) {
-		super(cardsPlayed);
+		super();
+		addCards(cardsPlayed);
 		this.player = player;
 	}
 
-	public int getSuit() {
+	public boolean isSameSuit() {
 		int suit = -1;
 		for (Card i : this) {
 			if (suit == -1) {
 				suit = i.getSuit();
 			}
 			if (suit != i.getSuit()) {
-				return -1;
+				return false;
 			}
 		}
-		if (Card.trumpSuit == suit) {
-			return Card.TRUMP_SUIT;
+		return true;
+	}
+
+	public int getSuit() {
+		if (isSameSuit()) {
+			return cards.get(0).getSuit();
 		}
-		return suit;
+		return -1;
 	}
 
 	public boolean getsBeatenBy(Combo challenger, Combo first) {
@@ -33,51 +38,23 @@ public class Combo extends CardCollection{
 	}
 
 	public int getPower(Combo first) {
-		/*
-		 * assumption: 1. cards are already sorted correctly (sequential cards
-		 * are next to each other) 2. cards have the same length as first.cards
-		 * 3. cards are already valid and playable
-		 */
-		/*
-		 * returns 0 if it's not going to beat the first combo
-		 */
-		if (getType() == ComboType.NONE) {
-			// not a combo
+		if (getType() == ComboType.NONE || getType() != first.getType()) {
 			return 0;
 		}
-		// check all are the same suit
-		if (isMixedSuit()) {
-			return 0;
-		}
-
-		// check if suit is same suit as first or trump
 		if (getSuit() != first.getSuit() && getSuit() != Card.TRUMP_SUIT) {
 			return 0;
 		}
 
-		// check to see if combination is a valid type (single, double, tractor)
-		if (isType(first.getType())) {
-			int power = get(0).getPowerIndex();
-			if (getSuit() == Card.TRUMP_SUIT) {
-				power += 100;
-			}
-			return power;
-		}
-
-		return 0;
-	}
-
-	private boolean isType(ComboType type) {
-		return getType() == type;
+		int power = get(0).getPowerIndex();
+		return power;
 	}
 
 	public ComboType getType() {
-		// TODO implement for +2 decks
 		if (isMixedSuit()) {
 			return ComboType.NONE;
 		} else if (isSingle()) {
 			return ComboType.SINGLE;
-		}else if (isPair()) {
+		} else if (isPair()) {
 			return ComboType.PAIR;
 		} else if (isTractor()) {
 			return ComboType.TRACTOR;
@@ -86,45 +63,33 @@ public class Combo extends CardCollection{
 	}
 
 	private boolean isTractor() {
-		if (size() % 2 == 0) {
-			for (int i = 0; i < size(); i += 2) {
-				if (!get(i).equals(get(i + 1))) {
-					return false;
-				}
-				try {
-					if (get(i).getPowerIndex() != get(i + 2).getPowerIndex() - 1) {
-						return false;
-					}
-				} catch (IndexOutOfBoundsException e) {
-
-				}
+		int numCopies = getCount(get(0));
+		for (int i = 0; i < size() - numCopies; i += numCopies) {
+			if (get(i).getPowerIndex() != get(i + numCopies).getPowerIndex()) {
+				return false;
 			}
-			return true;
+			if (getCount(get(i)) == numCopies) {
+				return false;
+			}
 		}
-		return false;
+		return true;
 	}
 
 	private boolean isPair() {
 		return size() == 2 && get(0).equals(get(1));
 	}
 
-	/**
-	 * @return
-	 */
 	private boolean isSingle() {
 		return size() == 1;
 	}
 
-	/**
-	 * @return
-	 */
 	private boolean isMixedSuit() {
 		return getSuit() == -1;
 	}
 
 	public List<Integer> consecutivePairCounts(Combo firstCombo) {
-
-		List<Integer> consecutivePairCounts = new ArrayList<Integer>();
+		// TODO: refactor
+		List<Integer> consPairCounts = new ArrayList<Integer>();
 		int currentCount = 0;
 		int maxCount = 0;
 		int startOfSuit = 0;
@@ -157,17 +122,17 @@ public class Combo extends CardCollection{
 			} else { // not a pair
 				i++;
 				if (currentCount > 0) {
-					consecutivePairCounts.add(currentCount);
+					consPairCounts.add(currentCount);
 				}
 				currentCount = 0;
 			}
 
 		}
 		if (currentCount > 0) {
-			consecutivePairCounts.add(currentCount);
+			consPairCounts.add(currentCount);
 		}
-		Collections.sort(consecutivePairCounts);
-		Collections.reverse(consecutivePairCounts);
-		return consecutivePairCounts;
+		Collections.sort(consPairCounts);
+		Collections.reverse(consPairCounts);
+		return consPairCounts;
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Player extends CardCollection{
+public class Player extends SortedCardCollection {
 	int id, level;
 
 	public Player(int i) {
@@ -18,6 +18,7 @@ public class Player extends CardCollection{
 	}
 
 	public boolean hasComboToPlay(Combo firstCombo) {
+		// TODO: refactor
 		// has to be pair or tractor
 		// the hard part is that tractors have multiple
 		// easiest is to find biggest number of consecutive pairs in the suit
@@ -62,21 +63,22 @@ public class Player extends CardCollection{
 	}
 
 	public boolean playedRequired(Combo firstCombo, Combo attemptedCombo) {
-		List<Integer> handConsecutivePairCounts = consecutivePairCounts(firstCombo);
-		List<Integer> comboConsecutivePairCounts = attemptedCombo.consecutivePairCounts(firstCombo);
+		// TODO: refactor
+		List<Integer> handConsecPairCounts = consecutivePairCounts(firstCombo);
+		List<Integer> comboConsecPairCounts = attemptedCombo.consecutivePairCounts(firstCombo);
 		int numberOfCardsNeeded = firstCombo.size();
 		int i = 0;
-		while (numberOfCardsNeeded != 0 && i < handConsecutivePairCounts.size()) {
-			if (i >= comboConsecutivePairCounts.size()) {
+		while (numberOfCardsNeeded != 0 && i < handConsecPairCounts.size()) {
+			if (i >= comboConsecPairCounts.size()) {
 				return false;
 			}
-			if (handConsecutivePairCounts.get(i) * 2 <= numberOfCardsNeeded) {
-				if (comboConsecutivePairCounts.get(i) != handConsecutivePairCounts.get(i)) {
+			if (handConsecPairCounts.get(i) * 2 <= numberOfCardsNeeded) {
+				if (comboConsecPairCounts.get(i) != handConsecPairCounts.get(i)) {
 					return false;
 				}
-				numberOfCardsNeeded -= handConsecutivePairCounts.get(i);
+				numberOfCardsNeeded -= handConsecPairCounts.get(i);
 			} else {
-				if (comboConsecutivePairCounts.get(i) != numberOfCardsNeeded) {
+				if (comboConsecPairCounts.get(i) != numberOfCardsNeeded) {
 					return false;
 				} else {
 					return true;
@@ -88,8 +90,8 @@ public class Player extends CardCollection{
 	}
 
 	public List<Integer> consecutivePairCounts(Combo firstCombo) {
-
-		List<Integer> consecutivePairCounts = new ArrayList<Integer>();
+		// TODO: refactor
+		List<Integer> consecPairCounts = new ArrayList<Integer>();
 		int currentCount = 0;
 		int maxCount = 0;
 		int startOfSuit = 0;
@@ -122,21 +124,22 @@ public class Player extends CardCollection{
 			} else { // not a pair
 				i++;
 				if (currentCount > 0) {
-					consecutivePairCounts.add(currentCount);
+					consecPairCounts.add(currentCount);
 				}
 				currentCount = 0;
 			}
 
 		}
 		if (currentCount > 0) {
-			consecutivePairCounts.add(currentCount);
+			consecPairCounts.add(currentCount);
 		}
-		Collections.sort(consecutivePairCounts);
-		Collections.reverse(consecutivePairCounts);
-		return consecutivePairCounts;
+		Collections.sort(consecPairCounts);
+		Collections.reverse(consecPairCounts);
+		return consecPairCounts;
 	}
 
 	public boolean canOverride(Player player, int newCallLevel) {
+		// TODO: refactor
 		int numCards = newCallLevel / 6 + 1;
 		int suit = newCallLevel % 6;
 		Card toCheck = null;
@@ -147,11 +150,12 @@ public class Player extends CardCollection{
 			}
 		} else if (suit == 4) {
 			toCheck = new Card("J-");
+			System.out.println("blah!");
 			if (numCards == 1) {
 				return false;
 			}
 		} else {
-			toCheck = new Card(Card.SUITS[suit] + Card.NORMAL_VALUES[Card.trumpValue]);
+			toCheck = new Card(Card.SUITS[suit] + Card.VALUES[Card.trumpValue]);
 		}
 		for (Card i : this) {
 			if (i.equals(toCheck)) {
@@ -161,8 +165,8 @@ public class Player extends CardCollection{
 		return numCards <= 0;
 	}
 
-	
-
-	
+	public boolean has(Card card, int numCards) {
+		return getCount(card) >= numCards;
+	}
 
 }

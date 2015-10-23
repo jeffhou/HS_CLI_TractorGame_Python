@@ -9,27 +9,20 @@ public class Round {
 	static final int NUM_LEFTOVER = 8;
 	static int roundCount = 0;
 	Deck mainDeck;
-	int boss, firstPlayer;
-	Player[] players;
+	int boss;
 	ArrayList<Trick> tricks;
 	boolean[] winners;
 	int[] playerTeams = { 0, 1, 0, 1 };
 	int[] playerPoints = { 0, 0, 0, 0 };
 	private int callLevel;
 
-	public Round(Player[] players, int winner) {
+	public Round(Player winner) {
 		roundCount++;
 		mainDeck = new Deck(NUM_DECKS);
-		boss = winner;
-		Card.trumpValue = players[boss].level;
-		if (winner == -1) {
-			firstPlayer = 0;
-		} else {
-			firstPlayer = winner;
-		}
 		tricks = new ArrayList<Trick>();
+		boss = winner.id;
+		Card.trumpValue = TractorGame.players[boss].level;
 		Card.trumpSuit = -1;
-		this.players = players;
 		callLevel = -1;
 	}
 
@@ -40,15 +33,15 @@ public class Round {
 		}
 
 		for (Card i : mainDeck) {
-			if (i.cardIndex % 13 == Card.trumpValue) {
-				Card.trumpSuit = i.cardIndex / 13;
+			if (i.getValue() == Card.trumpValue) {
+				Card.trumpSuit = i.getRawSuit();
 				return;
 			}
 		}
 		Card selector = null;
 		for (Card i : mainDeck) {
-			if (selector == null || selector.cardIndex % 13 < i.cardIndex % 13) {
-				if (selector.cardIndex < 52) {
+			if (selector == null || selector.getValue() < i.getValue()) {
+				if (!selector.isJoker()) {
 					selector = i;
 				}
 			}
@@ -57,50 +50,25 @@ public class Round {
 		Card.trumpSuit = selector.getSuit();
 	}
 
+	private boolean canOverrideCurrent(Player player, Call call) {
+		int newCallLevel = call.getCallLevel();
+		return newCallLevel > callLevel && player.has(call.card, call.count);
+	}
+
 	private void callTrumpInput(Player player) {
 		String trumpInput = getUserInput("Call: ");
-		if (!trumpInput.equals("")) {
-			int numCards = Integer.parseInt("" + trumpInput.charAt(0));
-			String suitString = trumpInput.substring(1);
-			int trumpSuit = -1;
-			int newCallLevel = 0;
-			for (int i = 0; i < Card.SUITS.length; i++) {
-				if (suitString.equals("" + Card.SUITS[i])) {
-					trumpSuit = i;
-					newCallLevel = i;
-				}
-			}
-			if (trumpSuit == -1) {
-				if (suitString.equals("J-")) {
-					trumpSuit = 4;
-					newCallLevel = 4;
-				} else if (suitString.equals("J+")) {
-					trumpSuit = 4;
-					newCallLevel = 5;
-				}
-			}
 
-			newCallLevel += (numCards - 1) * 6;
-
-			if (newCallLevel > callLevel) {
-				System.out.println("Checking override conditions...");
-				if (player.canOverride(player, newCallLevel)) {
-					Card.trumpSuit = trumpSuit;
-					callLevel = newCallLevel;
-					if (trumpSuit == 4) {
-						System.out.println("Trump Suit is now nothing!");
-					} else {
-						System.out.println(trumpSuit);
-						System.out.println("Trump Suit is now " + Card.SUITS[trumpSuit]);
-					}
-					if (roundCount == 1) {
-						boss = player.id;
-						firstPlayer = player.id;
-					}
-					return;
-				}
+		if (trumpInput.equals("")) {
+			return;
+		}
+		
+		Call call = new Call(trumpInput.substring(1), Integer.parseInt(trumpInput.substring(0, 1)));
+		if (canOverrideCurrent(player, call)) {
+			Card.setTrumpSuit(call.getSuit());
+			callLevel = call.getCallLevel();
+			if (roundCount == 1) {
+				boss = player.id;
 			}
-			System.out.println("Invalid call!");
 		}
 	}
 
@@ -135,19 +103,19 @@ public class Round {
 		while (mainDeck.size() > NUM_LEFTOVER) {
 			for (int i = 0; i < NUM_PLAYERS; i++) {
 				Card newCard = mainDeck.draw();
-				players[i].addCard(newCard);
+				TractorGame.players[i].addCard(newCard);
 				if (Card.trumpSuit == 4) {
-					System.out.println("\n=== HAND (!" + Card.NORMAL_VALUES[players[boss].level] + ")===");
+					System.out.println("\n=== HAND (!" + Card.VALUES[TractorGame.players[boss].level] + ")===");
 				} else if (Card.trumpSuit != -1) {
 					System.out.println("\n=== HAND (" + Card.SUITS[Card.trumpSuit] + ""
-							+ Card.NORMAL_VALUES[players[boss].level] + ")===");
+							+ Card.VALUES[TractorGame.players[boss].level] + ")===");
 				} else {
-					System.out.println("\n=== HAND (~" + Card.NORMAL_VALUES[players[boss].level] + ")===");
+					System.out.println("\n=== HAND (~" + Card.VALUES[TractorGame.players[boss].level] + ")===");
 				}
 
-				updateDisplay(players[i]);
+				updateDisplay(TractorGame.players[i]);
 				if (true) {
-					callTrumpInput(players[i]);
+					callTrumpInput(TractorGame.players[i]);
 				}
 
 			}
@@ -156,7 +124,7 @@ public class Round {
 
 	private void determineWinners(boolean challengersWin) {
 		int challengerTeam = playerTeams[boss];
-		for (int i = 0; i < players.length; i++) {
+		for (int i = 0; i < TractorGame.players.length; i++) {
 			if ((playerTeams[i] == challengerTeam) == challengersWin) {
 				winners[i] = true;
 			}
@@ -231,37 +199,42 @@ public class Round {
 
 	private void levelUpWinners(int level) {
 		for (int i = 0; i < NUM_PLAYERS; i++) {
-			players[i].levelUp(level);
+			TractorGame.players[i].levelUp(level);
 		}
 	}
 
 	private Trick nextTrick() {
 		Trick currentTrick = new Trick();
 		if (Card.trumpSuit == 4) {
-			System.out.println("=== NEW TRICK (!" + Card.NORMAL_VALUES[players[boss].level] + ")===");
+			System.out.println("=== NEW TRICK (!" + Card.VALUES[TractorGame.players[boss].level] + ")===");
 		} else {
 			System.out.println(
-					"=== NEW TRICK (" + Card.SUITS[Card.trumpSuit] + Card.NORMAL_VALUES[players[boss].level] + ")===");
+					"=== NEW TRICK (" + Card.SUITS[Card.trumpSuit] + Card.VALUES[TractorGame.players[boss].level] + ")===");
 		}
 
-		for (Player i : players) {
+		for (Player i : TractorGame.players) {
 			System.out.println("Player " + i.id + ": " + playerPoints[i.id] + " points");
 		}
 
 		for (int i = 0; i < NUM_PLAYERS; i++) {
-			int playerID = (i + firstPlayer) % NUM_PLAYERS;
-			updateDisplay(players[playerID]);
-			playCards(players[playerID], currentTrick);
+			int playerID;
+			if (tricks.size() == 0) {
+				playerID = boss;
+			}else{
+				playerID = (i + tricks.get(tricks.size() - 1).getWinner()) % NUM_PLAYERS;				
+			}
+
+			updateDisplay(TractorGame.players[playerID]);
+			playCards(TractorGame.players[playerID], currentTrick);
 		}
 		updatePoints(currentTrick.getWinner(), currentTrick.getPoints());
-		firstPlayer = currentTrick.getWinner();
 		System.out.println("Player " + currentTrick.getWinner() + " wins trick and earns " + currentTrick.getPoints()
 				+ " points!");
 		return currentTrick;
 	}
 
 	private Card[] playCards(Player player, int numCards, ComboType c) {
-		CardCollection cardsPlayed = new CardCollection();
+		SortedCardCollection cardsPlayed = new SortedCardCollection();
 		while (cardsPlayed.size() != numCards) {
 			if (!cardsPlayed.isSubSet(player) || cardsPlayed.size() > 8) {
 				cardsPlayed.removeAll();
@@ -276,7 +249,7 @@ public class Round {
 	}
 
 	private void playCards(Player player, Trick currentTrick) {
-		CardCollection cardsPlayed = new CardCollection();
+		CardCollection cardsPlayed = new SortedCardCollection();
 		boolean valid = false;
 		Combo combo = null;
 		while (!valid) {
@@ -294,7 +267,7 @@ public class Round {
 	}
 
 	private void populateTricks() {
-		while (!players[0].isEmpty()) {
+		while (!TractorGame.players[0].isEmpty()) {
 			tricks.add(nextTrick());
 		}
 	}
@@ -310,21 +283,21 @@ public class Round {
 		}
 
 		while (!mainDeck.isEmpty()) {
-			players[boss].addCard(mainDeck.draw());
+			TractorGame.players[boss].addCard(mainDeck.draw());
 		}
-		updateDisplay(players[boss]);
+		updateDisplay(TractorGame.players[boss]);
 
-		for (Card i : playCards(players[boss], 8, ComboType.NONE)) {
+		for (Card i : playCards(TractorGame.players[boss], 8, ComboType.NONE)) {
 			mainDeck.addCard(i);
-			players[boss].remove(i);
+			TractorGame.players[boss].remove(i);
 		}
-		updateDisplay(players[boss]);
+		updateDisplay(TractorGame.players[boss]);
 	}
 
 	public void start() {
 		dealAndCall();
 		replaceBottom();
-		for (Player i : players) {
+		for (Player i : TractorGame.players) {
 			i.sort();
 		}
 		populateTricks();
@@ -351,7 +324,7 @@ public class Round {
 			System.out.println("First combo played: " + combo.getType());
 			return combo.getType() != ComboType.NONE;
 		}
-		Combo first = currentTrick.combosPlayed.get(0);
+		Combo first = currentTrick.combos.get(0);
 		if (combo.size() == first.size()) {
 			// number of cards is right
 			if (combo.getSuit() != first.getSuit()) {

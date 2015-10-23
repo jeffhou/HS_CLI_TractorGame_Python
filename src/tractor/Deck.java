@@ -5,7 +5,7 @@ public class Deck extends CardCollection {
 	private static final int DECK_SIZE = 54;
 
 	public Deck(int numDecks) {
-		super(false);
+		super();
 		addDecks(numDecks);
 		shuffle();
 	}

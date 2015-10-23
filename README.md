@@ -27,4 +27,7 @@ Added README.
 ###### Version 1.0.3
 - Fixed README formatting.
 
+###### Version 1.04
+- Refactoring down technical debt
+
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>
