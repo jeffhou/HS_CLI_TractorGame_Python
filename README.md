@@ -27,7 +27,10 @@ Added README.
 ###### Version 1.0.3
 - Fixed README formatting.
 
-###### Version 1.04
+###### Version 1.0.4
 - Refactoring down technical debt
+
+###### Version 1.0.5
+- Fixed bug in checkBottom()
 
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>

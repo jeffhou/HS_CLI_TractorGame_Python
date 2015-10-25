@@ -96,7 +96,7 @@ public class Round {
 			break;
 		}
 		System.out.println(tricks.get(tricks.size() - 1).getWinner());
-		playerPoints[tricks.get(tricks.size()).getWinner()] += points * multiplier;
+		playerPoints[tricks.get(tricks.size() - 1).getWinner()] += points * multiplier;
 	}
 
 	private void dealAndCall() {
