@@ -33,4 +33,7 @@ Added README.
 ###### Version 1.0.5
 - Fixed bug in checkBottom()
 
+###### Version 1.0.6
+- Fixed bug in first trick / player cycling
+
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>

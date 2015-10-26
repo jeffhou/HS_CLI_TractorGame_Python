@@ -219,7 +219,7 @@ public class Round {
 		for (int i = 0; i < NUM_PLAYERS; i++) {
 			int playerID;
 			if (tricks.size() == 0) {
-				playerID = boss;
+				playerID = (i + boss) % NUM_PLAYERS;
 			}else{
 				playerID = (i + tricks.get(tricks.size() - 1).getWinner()) % NUM_PLAYERS;				
 			}
