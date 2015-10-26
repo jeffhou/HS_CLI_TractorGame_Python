@@ -36,4 +36,7 @@ Added README.
 ###### Version 1.0.6
 - Fixed bug in first trick / player cycling
 
+###### Version 1.1.0
+- Complete translation into python
+
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>
