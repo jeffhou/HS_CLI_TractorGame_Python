@@ -7,6 +7,12 @@ from Combo import Combo
 from ComboType import ComboType
 from SortedCardCollection import SortedCardCollection
 
+def printCardList(listOfCards):
+  print("[", end="")
+  for i in listOfCards:
+    print(i.toString(), end=", ")
+  print("]")
+  
 class Round:
 
   NUM_PLAYERS = 4
@@ -198,11 +204,8 @@ class Round:
         cardsPlayed.removeAll()
       else:
         print("VALID!")
-    printCardList(player)
     currentTrick.add(combo)
-    printCardList(player)
     player.removeCards(cardsPlayed)
-    printCardList(player)
   
   def populateTricks(self):
     while not Player.players[0].isEmpty():

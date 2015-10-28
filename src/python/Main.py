@@ -1,11 +1,5 @@
 from Player import Player
 from Round import Round
-
-def printCardList(listOfCards):
-  print("[", end="")
-  for i in listOfCards:
-    print(i.toString(), end=", ")
-  print("]")
   
 class TractorGame:
 

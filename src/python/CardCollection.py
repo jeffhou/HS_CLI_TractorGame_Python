@@ -1,7 +1,7 @@
 import random
 from TestingSuite import TESTING
-class CardCollection:
 
+class CardCollection:
   def __iter__(self):
     return self
     
@@ -53,12 +53,9 @@ class CardCollection:
     self.cards.clear()
 
   def removeCards(self, cards):
-    
     for i in cards.cards:
-      printCardList(cards.cards)
-      print(i.toString())
       self.cards.remove(i)
-
+      
   def shuffle(self):
     if TESTING:
       random.seed(0)

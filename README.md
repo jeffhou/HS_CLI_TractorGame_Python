@@ -48,4 +48,7 @@ Added README.
 ###### Version 1.1.3
 - Refactored down more unnecessary code
 
+###### Version 1.1.4
+- Refactored code dealing with debug code
+
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>
