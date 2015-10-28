@@ -54,7 +54,7 @@ class Combo(SortedCardCollection):
     return True
 
   def isPair(self):
-    return self.size() == 2 and self.get(0).equals(self.get(1))
+    return self.size() == 2 and self.get(0) == self.get(1)
 
   def isSingle(self):
     return self.size() == 1
@@ -77,7 +77,7 @@ class Combo(SortedCardCollection):
     i = startOfSuit
     lastPair = -1
     while i < self.size() - 1 and self.get(i).getSuit() == firstCombo.getSuit():
-      if self.get(i).equals(self.get(i + 1)):
+      if self.get(i) == self.get(i + 1):
         if lastPair == self.get(i).getPowerIndex():
           i += 2
           continue

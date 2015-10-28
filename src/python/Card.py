@@ -45,8 +45,6 @@ class Card:
     else:
       self.cardIndex = inputValue
 
-  def equals(self, o):
-    return o.cardIndex == self.cardIndex
   def __hash__(self):
     return hash((self.cardIndex))
     

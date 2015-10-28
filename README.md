@@ -45,4 +45,7 @@ Added README.
 ###### Version 1.1.2
 - Untangled dependencies and separated code into multiple files.
 
+###### Version 1.1.3
+- Refactored down more unnecessary code
+
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>

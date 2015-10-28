@@ -1,18 +1,21 @@
 from Player import Player
+from Trick import Trick
 from Deck import Deck
 from Card import Card
 from Call import Call
-from Trick import Trick
-from ComboType import ComboType
 from Combo import Combo
+from ComboType import ComboType
 from SortedCardCollection import SortedCardCollection
+
 class Round:
+
   NUM_PLAYERS = 4
   NUM_DECKS = 2
   NUM_LEFTOVER = 8
   roundCount = 0
   playerTeams = [0, 1, 0, 1]
   playerPoints = [0, 0, 0, 0]
+  
   def __init__(self, winner):
     Round.roundCount+=1
     self.mainDeck = Deck(Round.NUM_DECKS)
@@ -21,6 +24,7 @@ class Round:
     Card.trumpValue = Player.players[self.boss].level
     Card.trumpSuit = -1
     self.callLevel = -1
+  
   def autoAssignTrumpSuit(self):
     print("Bottom 8: ", end="")
     for i in self.mainDeck:
@@ -36,11 +40,13 @@ class Round:
           selector = i
     print(selector, end="")
     Card.trumpSuit = selector.getSuit()
+  
   def canOverrideCurrent(self, player, call):
     newCallLevel = call.getCallLevel()
-    if call.getCallLevel() >= 0 and call.count == 1:
+    if self.callLevel >= 0 and call.count == 1:
       return False
     return newCallLevel > self.callLevel and player.has(call.card, call.count) and call.isValid()
+  
   def callTrumpInput(self, player):
     trumpInput = self.getUserInput("Call: ")
     if trumpInput == "":
@@ -51,8 +57,10 @@ class Round:
       self.callLevel = call.getCallLevel()
       if self.roundCount == 1:
         self.boss = player.id
+  
   def challengersWin(self):
     self.determineWinners(True)
+  
   def checkBottom(self):
     points = 0
     for i in self.mainDeck:
@@ -68,6 +76,7 @@ class Round:
       multiplier = lastTrick.getNumCards() * 2
     print(lastTrick.getWinner())
     self.playerPoints[lastTrick.getWinner()] += points * multiplier
+  
   def dealAndCall(self):
     while self.mainDeck.size() > Round.NUM_LEFTOVER:
       for i in range(Round.NUM_PLAYERS):
@@ -86,28 +95,35 @@ class Round:
         self.updateDisplay(Player.players[i])
         if True:
           self.callTrumpInput(Player.players[i])
+  
   def determineWinners(self, challengersWin):
     challengerTeam = self.playerTeams[self.boss]
     for i in range(len(Player.players)):
       if (self.playerTeams[i] == challengerTeam) == challengersWin:
         self.winners[i] = True
+  
   def display(self, string):
     print(string)
+  
   def getPointsForChallengers(self):
     points = 0
     for i in range(RoundNUM_PLAYERS):
       if self.playerTeams[i] != self.playerTeams[self.boss]:
         points += self.playerPoints[i]
     return points
+  
   def getUserInput(self, prompt):
     return input(prompt)
+  
   def getWinner(self):
     for i in range(Round.NUM_PLAYERS):
       if self.winners[(i + self.boss + 1) % Round.NUM_PLAYERS]:
         return (i + self.boss + 1) % Round.NUM_PLAYERS
     return -1
+  
   def incumbentsWin(self):
     self.determineWinners(False)
+  
   def inputCardsPlayed(self, cards, player):
     print("Cards (" + str(cards.size()) + "): ", end="")
     for i in cards:
@@ -119,6 +135,7 @@ class Round:
     for i in cardStrings:
       print(Card(i).cardIndex)
       cards.addCard(Card(i))
+  
   def levelByPoints(self):
     points = self.getPointsForChallengers()
     if points < 80:
@@ -132,9 +149,11 @@ class Round:
     else:
       self.challengersWin()
       self.levelUpWinners(int(points / 40) - 2)
+  
   def levelUpWinners(self, level):
     for i in range(Round.NUM_PLAYERS):
       Player.players[i].levelUp(level)
+  
   def nextTrick(self):
     currentTrick = Trick()
     if Card.trumpSuit == 4:
@@ -154,19 +173,18 @@ class Round:
     print("Player " + str(currentTrick.getWinner()) + " wins trick and earns " + str(currentTrick.getPoints())
         + " points!")
     return currentTrick
+  
   def playCardsForBottom(self, player, numCards, c):
     cardsPlayed = SortedCardCollection()
     while cardsPlayed.size() != numCards:
       if not cardsPlayed.isSubSet(player) or cardsPlayed.size() > 8:
         cardsPlayed.removeAll()
-      self.inputCardsPlayed(cardsPlayed, player)
-      
-    
+      self.inputCardsPlayed(cardsPlayed, player)  
     cards = []
     for i in range(numCards):
       cards.append(cardsPlayed.get(i))
-    
     return cards
+    
   def playCards(self, player, currentTrick):
     cardsPlayed = SortedCardCollection()
     valid = False
@@ -185,9 +203,11 @@ class Round:
     printCardList(player)
     player.removeCards(cardsPlayed)
     printCardList(player)
+  
   def populateTricks(self):
     while not Player.players[0].isEmpty():
       self.tricks.append(self.nextTrick())
+  
   def replaceBottom(self):
     if Card.trumpSuit == -1:
       self.autoAssignTrumpSuit()
@@ -197,8 +217,6 @@ class Round:
     else:
       print()
       print("=== REPLACE BOTTOM (" + Card.SUITS[Card.trumpSuit] + ")===")
-    
-
     while not self.mainDeck.isEmpty():
       Player.players[self.boss].addCard(self.mainDeck.draw())
     self.updateDisplay(Player.players[self.boss])
@@ -211,6 +229,7 @@ class Round:
       for i in range(8):
         self.mainDeck.addCard(Player.players[self.boss].remove(0))
     self.updateDisplay(Player.players[self.boss])
+    
   def start(self):
     self.dealAndCall()
     self.replaceBottom()
@@ -219,13 +238,16 @@ class Round:
     self.populateTricks()
     self.checkBottom()
     self.levelByPoints()
+  
   def updateDisplay(self, player):
     print("Player " + str(player.id) + ": ", end="")
     for i in player:
       print(i.toString() + " ", end="")
     print()
+  
   def updatePoints(self, winner, points):
     self.playerPoints[winner] += points
+  
   def validateCardsPlayed(self, combo, currentTrick, player):
     if currentTrick.isEmpty():
       print("First combo played: " + str(combo.getType()))

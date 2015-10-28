@@ -9,16 +9,10 @@ class Deck (CardCollection):
     self.addDecks(numDecks)
     self.shuffle()
 
-  """
-   * Adds a complete deck of playing cards into the main deck.
-  """
   def addDeck(self):
     for i in range(self.DECK_SIZE): 
       self.addCard(Card(i))
 
-  """
-   * adds multiple decks into main deck
-  """
   def addDecks(self, numDecks):
     for i in range(numDecks):
       self.addDeck()

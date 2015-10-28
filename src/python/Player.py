@@ -1,11 +1,14 @@
 from SortedCardCollection import SortedCardCollection
 class Player(SortedCardCollection):
+
   def __init__(self, i):
     super().__init__()
     self.id = i
     self.level = 0
+    
   def levelUp(self, level):
     self.level += level
+    
   def hasComboToPlay(self, firstCombo):
     currentCount = 0
     maxCount = 0
@@ -17,7 +20,7 @@ class Player(SortedCardCollection):
     i = startOfSuit
     lastPair = -1
     while i < self.size() - 1 and self.get(i).getSuit() == firstCombo.getSuit():
-      if self.get(i).equals(self.get(i + 1)):
+      if self.get(i) == self.get(i + 1):
         if lastPair == self.get(i).getPowerIndex():
           i += 2
           continue
@@ -34,6 +37,7 @@ class Player(SortedCardCollection):
     if maxCount * 2 >= firstCombo.size():
       return True
     return False
+  
   def playedRequired(self, firstCombo, attemptedCombo):
     handConsecPairCounts = self.consecutivePairCounts(firstCombo)
     comboConsecPairCounts = attemptedCombo.consecutivePairCounts(firstCombo)
@@ -53,6 +57,7 @@ class Player(SortedCardCollection):
           return True
       i+=1
     return True
+  
   def consecutivePairCounts(self, firstCombo):
     consecPairCounts = []
     currentCount = 0
@@ -65,7 +70,7 @@ class Player(SortedCardCollection):
     i = startOfSuit
     lastPair = -1
     while i < self.size() - 1 and self.get(i).getSuit() == firstCombo.getSuit():
-      if self.get(i).equals(self.get(i + 1)):
+      if self.get(i) == self.get(i + 1):
         if lastPair == self.get(i).getPowerIndex():
           i += 2
           continue
@@ -87,6 +92,7 @@ class Player(SortedCardCollection):
     consecPairCounts.sort()
     consecPairCounts.reverse()
     return consecPairCounts
+  
   def canOverride(self, player, newCallLevel):
     numCards = int(newCallLevel / 6) + 1
     suit = newCallLevel % 6
@@ -102,8 +108,9 @@ class Player(SortedCardCollection):
     else:
       toCheck = Card(Card.SUITS[suit] + Card.VALUES[Card.trumpValue])
     for i in self:
-      if i.equals(toCheck):
+      if i == toCheck:
         numCards-=1
     return numCards <= 0
+  
   def has(self, card, numCards):
     return self.getCount(card) >= numCards

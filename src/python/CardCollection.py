@@ -35,7 +35,7 @@ class CardCollection:
     return self.cards[i]
 
   def getCount(self, c):
-    return sum(c.equals(card) for card in self.cards)
+    return sum(c == card for card in self.cards)
 
   def getCardCount(self):
     return len(self.cards)
@@ -43,13 +43,11 @@ class CardCollection:
   def isEmpty(self):
     return len(self.cards) == 0
 
-
   def remove(self, i):
     if type(i) != int:
       return self.cards.remove(i)
     else:
       return self.cards.pop(i)
-
 
   def removeAll(self):
     self.cards.clear()
