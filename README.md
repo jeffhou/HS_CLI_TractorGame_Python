@@ -39,4 +39,7 @@ Added README.
 ###### Version 1.1.0
 - Complete translation into python
 
+###### Version 1.1.1
+- Removed extraneous comments and files
+
 [Pagat]:<http://www.pagat.com/kt5/tractor.html>
