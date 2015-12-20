@@ -2,6 +2,8 @@ class Trick:
   
   def __init__(self):
     self.combos = []
+  def isComplete(self):
+    return len(self.combos) == 4
 
   def getPoints(self):
     points = 0

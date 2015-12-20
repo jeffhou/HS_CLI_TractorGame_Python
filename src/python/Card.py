@@ -3,6 +3,7 @@ class Card:
   VALUES = [ "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" ]
   JOKERS = [ "J-", "J+" ]
   SUITS = [ '#', '@', '$', '&' ]
+  SUIT_NAMES = [ 'Clubs', 'Diamonds', 'Hearts', 'Spades' ]
   POINTS = [ 0, 0, 0, 5, 0, 0, 0, 0, 10, 0, 0, 10, 0 ]
   TRUMP_SUIT = 5
   
@@ -15,11 +16,11 @@ class Card:
       print("Trump Suit is now " + Card.SUITS[Card.trumpSuit])
   
   def getIndexOfSuit(self, suitString):
-    trumpSuit = -1
+    suit = -1
     for i in range(len(Card.SUITS)):
       if suitString == Card.SUITS[i]:
-        trumpSuit = i
-    return trumpSuit
+        suit = i
+    return suit
 
   def getRawSuit(self):
     return int(self.cardIndex / 13)

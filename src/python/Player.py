@@ -13,7 +13,7 @@ class Player(SortedCardCollection):
     currentCount = 0
     maxCount = 0
     startOfSuit = 0
-    for i in self.size():
+    for i in range(self.size()):
       if self.get(i).getSuit() == firstCombo.getSuit():
         startOfSuit = i
         break

@@ -1,0 +1,76 @@
+<!doctype html>
+<title>~ Tractor Game ~</title>
+<style>
+td {
+	width: 50px;
+}
+table {
+	border: 1px solid black;
+}
+div img {
+	display:inline;
+}
+.card-image {
+	vertical-align: middle;
+}
+.card-option {
+	float:left;
+}
+.card-option-checkbox {
+	text-align:center;
+	margin-top: -4px;
+}
+.card-option-image {
+	
+}
+</style>
+<table>
+	<tr>
+		<td>Player</td>
+		<td>Level</td>
+	</tr>
+{% for player_id in range(players|length) %}
+	<tr>
+		<td>{{ player_id }} {%if boss==player_id%}*{%endif%}</td>
+		<td>{{ values[players[player_id].level] }}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<table>
+	<tr>
+		<td>Trump</td>
+		<td>{{trump_string}}</td>
+	</tr>
+</table>
+
+
+<div style="border: 1px solid black; float:left">
+{% for player in players %}
+	<div>
+		<div>
+			Player {{ player.id }}
+			{% if current_player == player.id %}
+			~current player~
+			{% endif %}
+		</div>
+		<div>
+		{% if player.id == current_player %}
+			<form action="{{ url_for('bury_cards') }}" method="post">
+			{% for card in player.cards %}
+			<div class="card-option">
+				<div class="card-option-image">
+					<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />
+				</div>
+				<div class="card-option-checkbox">
+					<input type="checkbox" name="card" value="{{ card.cardIndex }}">
+				</div>
+			</div>
+			{% endfor %}
+			<input type="submit">
+			</form>
+		{% endif %}
+		</div>
+	</div>
+{% endfor %}
+</div>

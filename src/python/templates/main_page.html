@@ -1,0 +1,124 @@
+<!doctype html>
+<title>~ Tractor Game ~</title>
+<style>
+td {
+	width: 50px;
+}
+table {
+	border: 1px solid black;
+}
+div img {
+	display:inline;
+}
+.card-image {
+	vertical-align: middle;
+}
+.card-option {
+    float: left;
+}
+</style>
+<table>
+	<tr>
+		<td>Player</td>
+		<td>Level</td>
+		<td>Points</td>
+	</tr>
+{% for player_id in range(players|length) %}
+	<tr>
+		<td>{{ player_id }} {%if boss==player_id%}*{%endif%}</td>
+		<td>{{ values[players[player_id].level] }}</td>
+		<td>{{ points[player_id] }}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<table>
+	<tr>
+		<td>Trump</td>
+		<td>{{trump_string}}</td>
+	</tr>
+</table>
+
+
+<div style="border: 1px solid black;">
+{% for playedCombo in playedCombos %}
+	<div>
+		<div>
+			Player {{ playedCombo.player_id }}
+			{% if current_player == player.id %}
+			~current player~
+			{% endif %}
+		</div>
+		<div>{% for card in player.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}</div>
+	</div>
+{% endfor %}
+</div>
+
+<div style="border: 1px solid black;">
+
+	<div style="float:left; text-align: center; width: 100%;">
+		<div>
+			Player {{ acrossPlayer.id }}
+		</div>
+		<div>
+			{% for combo in trick.combos %}
+			{% if combo.player.id == acrossPlayer.id %}
+			{% for card in combo.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	<div style="float:left; text-align: center; width: 50%;">
+		<div>
+			Player {{ leftPlayer.id }}
+		</div>
+		<div>
+			{% for combo in trick.combos %}
+			{% if combo.player.id == leftPlayer.id %}
+			{% for card in combo.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	<div style="float:left; text-align: center; width: 50%;">
+		<div>
+			Player {{ rightPlayer.id }}
+			
+		</div>
+		<div>
+			{% for combo in trick.combos %}
+			{% if combo.player.id == rightPlayer.id %}
+			{% for card in combo.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	<div style="text-align: center; float:left; width: 100%">
+		<div>
+			Player {{ players[current_player].id }}
+			
+			~current player~
+			
+		</div>
+		<form action="{{ url_for('play_cards') }}" method="post">
+		<div style="display: inline-block;">
+			{% for card in players[current_player].cards %}
+			<div class="card-option" style="/* border:1px solid #000; */ display:inline-block;">
+				<div class="card-option-image">
+					<img class="card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}">
+				</div>
+				<div class="card-option-checkbox">
+					<input type="checkbox" name="card" value="{{ card.cardIndex }}">
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div style="display: block;">
+		<input type="submit">
+	</div>
+		</form>
+		
+	</div>
+    
+</div>
+</body></html>

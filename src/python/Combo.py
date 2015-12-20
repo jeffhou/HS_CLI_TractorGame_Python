@@ -1,5 +1,6 @@
 from ComboType import ComboType
 from SortedCardCollection import SortedCardCollection
+from Card import Card
 class Combo(SortedCardCollection):
 
   def __init__(self, player, cardsPlayed):
@@ -47,9 +48,9 @@ class Combo(SortedCardCollection):
   def isTractor(self):
     numCopies = self.getCount(self.get(0))
     for i in range(0, self.size() - numCopies, numCopies):
-      if self.get(i).getPowerIndex() != self.get(i + numCopies).getPowerIndex():
+      if self.get(i).getPowerIndex() != self.get(i + numCopies).getPowerIndex() - 1:
         return False
-      if self.getCount(self.get(i)) == numCopies:
+      if self.getCount(self.get(i)) != numCopies:
         return False
     return True
 

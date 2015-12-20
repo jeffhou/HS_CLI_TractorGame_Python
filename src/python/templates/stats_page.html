@@ -1,0 +1,20 @@
+<!doctype html>
+<title>~ Tractor Game ~</title>
+<style>
+td {
+	width: 50px;
+}
+</style>
+<table>
+	<tr>
+		<td>Player</td>
+		<td>Level</td>
+	</tr>
+{% for player_id in range(players|length) %}
+	<tr>
+		<td>{{ player_id }}</td>
+		<td>{{ values[players[player_id].level] }}</td>
+	</tr>
+{% endfor %}
+</table>
+<a href="{{ url_for('start_round') }}">Start Round</a>

@@ -1,0 +1,63 @@
+<!doctype html>
+<title>~ Tractor Game ~</title>
+<style>
+td {
+	width: 50px;
+}
+table {
+	border: 1px solid black;
+}
+div img {
+	display:inline;
+}
+.card-image {
+	vertical-align: middle;
+}
+</style>
+<table>
+	<tr>
+		<td>Player</td>
+		<td>Level</td>
+	</tr>
+{% for player_id in range(players|length) %}
+	<tr>
+		<td>{{ player_id }} {%if boss==player_id%}*{%endif%}</td>
+		<td>{{ values[players[player_id].level] }}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<table>
+	<tr>
+		<td>Trump</td>
+		<td>{{trump_string}}</td>
+	</tr>
+</table>
+
+
+<div style="border: 1px solid black;">
+{% for player in players %}
+	<div>
+		<div>
+			Player {{ player.id }}
+			{% if current_player == player.id %}
+			~current player~
+			{% endif %}
+		</div>
+		<div>{% for card in player.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}</div>
+	</div>
+{% endfor %}
+</div>
+
+<a href="{{ url_for('start_round') }}">Next Player</a>
+{% if options|length > 0 %}
+<div style="border: 1px solid black;">
+	<form action="{{ url_for('make_call') }}" method="post">
+	<div>Call Trump</div>
+	{% for call in options %}
+	<div> <input type="radio" name="call" value="{{call.serializeSelf()}}" checked>{{ call.count }} x <img class = "card-image" src="{{ url_for('static', filename='images/'+call.card.cardIndex|string+'.gif') }}" /></div>
+	{% endfor %}
+	<input type="submit">
+	</form>
+</div>
+{% endif %}
