@@ -45,7 +45,7 @@ div img {
 	<div>
 		<div>
 			Player {{ playedCombo.player_id }}
-			{% if current_player == player.id %}
+			{% if circle['current'].id == player.id %}
 			~current player~
 			{% endif %}
 		</div>
@@ -58,11 +58,11 @@ div img {
 
 	<div style="float:left; text-align: center; width: 100%;">
 		<div>
-			Player {{ acrossPlayer.id }}
+			Player {{ circle['across'].id }}
 		</div>
 		<div>
 			{% for combo in trick.combos %}
-			{% if combo.player.id == acrossPlayer.id %}
+			{% if combo.player.id == circle['across'].id %}
 			{% for card in combo.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}
 			{% endif %}
 			{% endfor %}
@@ -70,11 +70,11 @@ div img {
 	</div>
 	<div style="float:left; text-align: center; width: 50%;">
 		<div>
-			Player {{ leftPlayer.id }}
+			Player {{ circle['left'].id }}
 		</div>
 		<div>
 			{% for combo in trick.combos %}
-			{% if combo.player.id == leftPlayer.id %}
+			{% if combo.player.id == circle['left'].id %}
 			{% for card in combo.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}
 			{% endif %}
 			{% endfor %}
@@ -82,12 +82,12 @@ div img {
 	</div>
 	<div style="float:left; text-align: center; width: 50%;">
 		<div>
-			Player {{ rightPlayer.id }}
+			Player {{ circle['right'].id }}
 			
 		</div>
 		<div>
 			{% for combo in trick.combos %}
-			{% if combo.player.id == rightPlayer.id %}
+			{% if combo.player.id == circle['right'].id %}
 			{% for card in combo.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}
 			{% endif %}
 			{% endfor %}
@@ -95,14 +95,14 @@ div img {
 	</div>
 	<div style="text-align: center; float:left; width: 100%">
 		<div>
-			Player {{ players[current_player].id }}
+			Player {{ circle['current'].id }}
 			
 			~current player~
 			
 		</div>
 		<form action="{{ url_for('play_cards') }}" method="post">
 		<div style="display: inline-block;">
-			{% for card in players[current_player].cards %}
+			{% for card in circle['current'].cards %}
 			<div class="card-option" style="/* border:1px solid #000; */ display:inline-block;">
 				<div class="card-option-image">
 					<img class="card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}">

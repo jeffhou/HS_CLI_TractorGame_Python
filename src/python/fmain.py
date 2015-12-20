@@ -35,16 +35,14 @@ def getTrumpString():
 @app.route('/start_round')
 def start_round():
   global round
-
-  if round.drawCard():
+  if round.drawCard(): #drawing works
     options = round.generateAllPossibleCalls(Player.players[round.currentPlayer])
-    print("Current Player: " + str(round.currentPlayer))
     return render_template('play_page.html', values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), options=options, current_player=round.currentPlayer)
-  else:
+  else: #done drawing
     if Card.trumpSuit == -1:
       round.autoAssignTrumpSuit()
-    while not round.mainDeck.isEmpty():
-      Player.players[round.boss].addCard(round.mainDeck.draw())
+    round.giveBottom(round.boss)
+    round.currentPlayer = round.boss
     return render_template('bury_page.html', values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.boss)
 
 @app.route('/make_call', methods=['POST'])
@@ -52,11 +50,8 @@ def make_call():
   global round
   if request.method == 'POST':
     call = Call.deserialize(request.form['call'])
-    print(call)
     round.callTrump(round.currentPlayer, call)
-  
   if round.drawCard():
-    print("Current Player: " + str(round.currentPlayer))
     options = round.generateAllPossibleCalls(Player.players[round.currentPlayer])
     return render_template('play_page.html', values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.currentPlayer)
   else:
@@ -73,16 +68,14 @@ def bury_cards():
     cards = request.form.getlist('card')
     for i in range(len(cards)):
       cards[i] = Card(int(cards[i]))
-    if round.buryCards(cards):
+
+    if round.buryCards(cards): # bury successful
       round.currentPlayer = round.boss
       round.currentTrick = Trick()
-      return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.currentPlayer, acrossPlayer=Player.players[(round.currentPlayer + 2)%4], leftPlayer=Player.players[(round.currentPlayer + 3)%4], rightPlayer=Player.players[(round.currentPlayer + 1)%4], trick=round.currentTrick)
-    else:
-      if Card.trumpSuit == -1:
-        round.autoAssignTrumpSuit()
-      while not round.mainDeck.isEmpty():
-        Player.players[round.boss].addCard(round.mainDeck.draw())
+      return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), trick=round.currentTrick, circle=round.getPlayerCircle())
+    else: # retry
       return render_template('bury_page.html', values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.boss)
+
 @app.route('/play_cards', methods=['POST'])
 def play_cards():
   global round
@@ -90,25 +83,23 @@ def play_cards():
     cards = request.form.getlist('card')
     for i in range(len(cards)):
       cards[i] = Card(int(cards[i]))
-    if round.playCardsForTrick(Player.players[round.currentPlayer], cards, round.currentTrick):
+
+    if round.playCardsForTrick(Player.players[round.currentPlayer], cards, round.currentTrick): #the combo the current player played is valid
       if round.currentTrick.isComplete():
         round.updatePoints(round.currentTrick.getWinner(), round.currentTrick.getPoints())
-        if Player.players[0].isEmpty():
+        if round.isComplete():
           round.checkBottom()
           round.levelByPoints()
-          round = Round(Player.players[round.getWinner()])
+          round = round.nextRound()
           return render_template('stats_page.html', players=Player.players, values=Card.VALUES)
-        round.currentPlayer = round.currentTrick.getWinner()
-        round.tricks.append(round.currentTrick)
-        round.currentTrick = Trick()
-        #show who the winner is
-        return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.currentPlayer, acrossPlayer=Player.players[(round.currentPlayer + 2)%4], leftPlayer=Player.players[(round.currentPlayer + 3)%4], rightPlayer=Player.players[(round.currentPlayer + 1)%4], trick=round.currentTrick)
+        else:
+          round.prepNextTrick()
+          return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), trick=round.currentTrick, circle=round.getPlayerCircle())
       else:
-        round.currentPlayer = (round.currentPlayer + 1) % 4
-        return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.currentPlayer, acrossPlayer=Player.players[(round.currentPlayer + 2)%4], leftPlayer=Player.players[(round.currentPlayer + 3)%4], rightPlayer=Player.players[(round.currentPlayer + 1)%4], trick=round.currentTrick)
-
+        round.incrementCurrentPlayer()
+        return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), trick=round.currentTrick, circle=round.getPlayerCircle())
     else:
-      return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), current_player=round.currentPlayer, acrossPlayer=Player.players[(round.currentPlayer + 2)%4], leftPlayer=Player.players[(round.currentPlayer + 3)%4], rightPlayer=Player.players[(round.currentPlayer + 1)%4], trick=round.currentTrick)
+      return render_template('main_page.html', points=round.playerPoints, values=Card.VALUES, players=Player.players, boss=round.boss, trump_string=getTrumpString(), trick=round.currentTrick, circle=round.getPlayerCircle())
 if __name__ == '__main__':
   app.debug = True
   app.run()

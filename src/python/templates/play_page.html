@@ -44,7 +44,15 @@ div img {
 			~current player~
 			{% endif %}
 		</div>
-		<div>{% for card in player.cards %}<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />{% endfor %}</div>
+		<div>
+			{% for card in player.cards %}
+			{% if current_player == player.id %}
+			<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />
+			{% else %}
+			<img class = "card-image" src="{{ url_for('static', filename='images/back.gif') }}" style="height:57px" />
+			{% endif %}
+			{% endfor %}
+		</div>
 	</div>
 {% endfor %}
 </div>

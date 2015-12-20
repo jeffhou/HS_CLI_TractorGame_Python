@@ -32,6 +32,7 @@ class Round:
     Card.trumpSuit = -1
     self.callLevel = -1
     self.currentPlayer = (self.boss - 1) % self.NUM_PLAYERS
+  
   def autoAssignTrumpSuit(self):
     print("Bottom 8: ", end="")
     for i in self.mainDeck:
@@ -92,6 +93,7 @@ class Round:
       multiplier = lastTrick.getNumCards() * 2
     print(lastTrick.getWinner())
     self.playerPoints[lastTrick.getWinner()] += points * multiplier
+  
   def drawCard(self):
     if self.mainDeck.size() > Round.NUM_LEFTOVER:
       self.currentPlayer = (self.currentPlayer + 1) % self.NUM_PLAYERS
@@ -124,8 +126,10 @@ class Round:
     for i in range(len(Player.players)):
       if (self.playerTeams[i] == incumbentsTeam) != challengersWin:
         self.winners[i] = True
+  
   def display(self, string):
     print(string)
+  
   def generateAllPossibleCalls(self, player):
     calls = []
     for i in range(1,3):
@@ -164,7 +168,11 @@ class Round:
     for i in cardStrings:
       print(Card(i).cardIndex)
       cards.addCard(Card(i))
-  
+  def isComplete(self):
+    for i in Player.players:
+      if not i.isEmpty():
+        return False
+    return True
   def levelByPoints(self):
     points = self.getPointsForChallengers()
     if points < 80:
@@ -259,7 +267,12 @@ class Round:
   def populateTricks(self):
     while not Player.players[0].isEmpty():
       self.tricks.append(self.nextTrick())
-  
+  def nextRound(self):
+    return Round(Player.players[self.getWinner()])
+  def prepNextTrick(self):
+    self.currentPlayer = self.currentTrick.getWinner()
+    self.tricks.append(self.currentTrick)
+    self.currentTrick = Trick()
   def replaceBottom(self):
     if Card.trumpSuit == -1:
       self.autoAssignTrumpSuit()
@@ -296,10 +309,20 @@ class Round:
     for i in player:
       print(i.toString() + " ", end="")
     print()
-  
+  def getPlayerCircle(self):
+    circle = {}
+    circle['current'] = Player.players[self.currentPlayer]
+    circle['left'] = Player.players[(self.currentPlayer + 3) % 4]
+    circle['across'] = Player.players[(self.currentPlayer + 2) % 4]
+    circle['right'] = Player.players[(self.currentPlayer + 1) % 4]
+    return circle
   def updatePoints(self, winner, points):
     self.playerPoints[winner] += points
-  
+  def giveBottom(self, playerID):
+    while not self.mainDeck.isEmpty():
+      Player.players[playerID].addCard(self.mainDeck.draw())
+  def incrementCurrentPlayer(self):
+    self.currentPlayer = (self.currentPlayer + 1) % 4
   def validateCardsPlayed(self, combo, currentTrick, player):
     if combo.isEmpty():
       return False

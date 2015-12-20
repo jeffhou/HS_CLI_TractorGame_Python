@@ -47,10 +47,11 @@ class Combo(SortedCardCollection):
 
   def isTractor(self):
     numCopies = self.getCount(self.get(0))
+    for i in range(0, self.size(), numCopies):
+      if self.getCount(self.get(i)) != numCopies:
+        return False
     for i in range(0, self.size() - numCopies, numCopies):
       if self.get(i).getPowerIndex() != self.get(i + numCopies).getPowerIndex() - 1:
-        return False
-      if self.getCount(self.get(i)) != numCopies:
         return False
     return True
 

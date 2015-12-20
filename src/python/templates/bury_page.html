@@ -46,18 +46,13 @@ div img {
 
 
 <div style="border: 1px solid black; float:left">
-{% for player in players %}
 	<div>
 		<div>
-			Player {{ player.id }}
-			{% if current_player == player.id %}
-			~current player~
-			{% endif %}
+			Player {{ current_player }}	~current player~
 		</div>
-		<div>
-		{% if player.id == current_player %}
-			<form action="{{ url_for('bury_cards') }}" method="post">
-			{% for card in player.cards %}
+		<form action="{{ url_for('bury_cards') }}" method="post">
+		<div style="display:inline-block">
+			{% for card in players[current_player].cards %}
 			<div class="card-option">
 				<div class="card-option-image">
 					<img class = "card-image" src="{{ url_for('static', filename='images/'+card.cardIndex|string+'.gif') }}" />
@@ -66,11 +61,11 @@ div img {
 					<input type="checkbox" name="card" value="{{ card.cardIndex }}">
 				</div>
 			</div>
-			{% endfor %}
-			<input type="submit">
-			</form>
-		{% endif %}
+			{% endfor %}	
 		</div>
+		<div style="display:inline-block">
+			<input type="submit">
+		</div>
+		</form>
 	</div>
-{% endfor %}
 </div>
