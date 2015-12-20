@@ -11,10 +11,6 @@ app = Flask(__name__)
 def index():
   return render_template('index.html')
 
-@app.route('/hello')
-def hello():
-  return render_template('hello.html', data=123456)
-
 @app.route('/start_game')
 def start_game():
   global game, round
