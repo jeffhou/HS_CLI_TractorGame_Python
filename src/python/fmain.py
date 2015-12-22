@@ -9,7 +9,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-  return render_template('index.html')
+  global game, round
+  try:
+    print(game)
+  except:
+    game = TractorGame()
+    round = game.nextRound()
+  return render_template('stats_page.html', players=Player.players, values=Card.VALUES)
 
 @app.route('/start_game')
 def start_game():

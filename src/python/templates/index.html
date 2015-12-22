@@ -1,3 +1,70 @@
 <!doctype html>
+<style>
+			.box {
+				border: 1px solid black;
+				background-color: pink;
+			}
+			.top-menu {
+				width: 100%;
+				margin: 30px -100px 0 -100px;
+				padding: 10px 100px 10px 100px;
+			}
+			.left-box {
+				width: 350px;
+				margin: 20px 0 0 10px;
+			}
+			.right-box {
+				width: 850px;
+				height: 520px;
+				margin: 20px 10px 0 10px;
+				text-align: center;
+				vertical-align: middle;
+			}
+			.left-stats {
+				height: 200px;
+			}
+			.left-events {
+				height: 300px;
+			}
+			.logo {
+				margin-left: 10px;
+				height: 50px;
+			}
+			.top-menu-item {
+				display: inline-block;
+				vertical-align: middle;
+				
+			}
+			.top-menu-links {
+				display: none;
+				width: 40%;
+				text-align: right;
+				float: right;
+				margin-top: 25px;
+				margin-right: 10px;
+				font-size: larger;
+			}
+			.top-menu-logo {
+				width: 40%;
+			}
+		</style>
 <title>~ Tractor Game ~</title>
-<a href="{{ url_for('start_game') }}">Start Game</a>
+
+<div class="top-menu box">
+			<div class="top-menu-item top-menu-logo">
+				<img src="{{ url_for('static', filename='images/tractorlogo.png') }}" class="logo"/>
+			</div>
+			<div class="top-menu-item top-menu-links">
+				Home &nbsp;|&nbsp; Games &nbsp;|&nbsp; Settings &nbsp;|&nbsp; Log Out
+			</div>
+		</div>
+		<div style="float:left">
+			<div class="left-stats box left-box">
+			</div>
+			<div class="left-events box left-box">
+			</div>
+		</div>
+		<div class="box right-box" style="float:right">
+			<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+			<a href="{{ url_for('start_game') }}" style="margin-top: 50px;">Start Game</a>
+		</div>
