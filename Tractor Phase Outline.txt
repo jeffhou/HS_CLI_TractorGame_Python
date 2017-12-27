@@ -1,0 +1,12 @@
+Tractor Phases
+-Get a deck
+-Shuffle the deck
+-Deal to players
+	Sort by Suit
+	Sort by Value
+-Bid for Bury
+-Winner gets Bury Pile
+	Combine bury + hand
+	Sort by suit
+	Sort by value
+-Winner calls trump
